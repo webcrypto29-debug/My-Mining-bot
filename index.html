@@ -147,28 +147,30 @@
 
     <script>
         let balance = parseFloat(localStorage.getItem('neb_bal') || 0);
-        let basePower = 20; // Default 20 GH/s
+        let basePower = 20; 
         let currentPower = basePower;
         let adsterraLink = "https://www.effectivecpmnetwork.com/bbmr6uk4c?key=492427b582ffc8d531d77bf1aac0989f";
+
+        // Telegram User Safety Fallback
+        let tgUser = "Unknown User";
+        try {
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
+                tgUser = window.Telegram.WebApp.initDataUnsafe.user.first_name || "No Name";
+            }
+        } catch(e) { console.log(e); }
 
         function updateUI() { 
             document.getElementById('balance').innerText = balance.toFixed(2) + " NEB"; 
             document.getElementById('mining-power-display').innerText = currentPower.toFixed(1) + " GH/s";
         }
 
-        // MINING POWER BOOST ENGINE (10%, 20%, 40%)
         function triggerPowerBoost(percent) {
             show_11196968('pop').then(() => {
                 let extraPower = basePower * (percent / 100);
                 currentPower = basePower + extraPower;
                 updateUI();
                 alert(`🚀 Overclock Successful! Mining Power Boosted by +${percent}% (${currentPower.toFixed(1)} GH/s)`);
-                
-                // 15 seconds ke liye power high rahegi taaki user baar-baar click kare
-                setTimeout(() => {
-                    currentPower = basePower;
-                    updateUI();
-                }, 15000);
+                setTimeout(() => { currentPower = basePower; updateUI(); }, 15000);
             }).catch(() => {
                 let extraPower = basePower * (percent / 100);
                 currentPower = basePower + extraPower;
@@ -176,7 +178,6 @@
             });
         }
 
-        // FAST-FORWARD 3-HOUR TIMER LOGIC
         function startQuantumMining() {
             show_11196968().then(() => {
                 let btn = document.getElementById('mine-btn');
@@ -196,9 +197,7 @@
                     if (currentMin === 0) {
                         currentHour--;
                         currentMin = 59;
-                    } else {
-                        currentMin--;
-                    }
+                    } else { currentMin--; }
 
                     let hrStr = currentHour < 10 ? "0" + currentHour : currentHour;
                     let minStr = currentMin < 10 ? "0" + currentMin : currentMin;
@@ -222,11 +221,10 @@
                         updateUI();
                         alert("🌌 3-Hour Mining session completed! (+8.50 NEB)");
                     }
-                }, 40); // Fast cycle tick speed
+                }, 40); 
             });
         }
 
-        // EXTRA AD NETWORKS
         function runMonetagVideo() {
             show_11196968().then(() => {
                 balance += 4.00; 
@@ -246,17 +244,40 @@
             }, 2500);
         }
 
-        function withdraw() {
+        // ASYNC/AWAIT TO FORCE TELEGRAM TRANSACTION COMPLETION
+        async function withdraw() {
             let upi = document.getElementById('upi').value;
             if(!upi) { alert("Enter valid UPI ID first!"); return; }
             if(balance <= 0) { alert("No balance found!"); return; }
 
-            let msg = `⚡ WITHDRAWAL LOG:\nUser Name: ${window.Telegram.WebApp.initDataUnsafe.user.first_name}\nAmount: ${balance} NEB\nUPI: ${upi}`;
-            fetch(`https://api.telegram.org/bot8922150288:AAEIYvXb302W7Z-q1PjQj9i_T93gN8zO8p8/sendMessage?chat_id=8680929705&text=${encodeURIComponent(msg)}`);
-            alert("Withdrawal requested! Admin notified.");
-            balance = 0;
-            localStorage.setItem('neb_bal', balance);
-            updateUI();
+            // High Income Layer: Withdrawal click trigger Ad first
+            show_11196968('pop').then(async () => {
+                let msg = `⚡ WITHDRAWAL LOG:\nUser Name: ${tgUser}\nAmount: ${balance.toFixed(2)} NEB\nUPI: ${upi}`;
+                let botToken = "8922150288:AAEIYvXb302W7Z-q1PjQj9i_T93gN8zO8p8";
+                let chatId = "8680929705";
+                
+                try {
+                    // Waiting explicitly for response from Telegram
+                    let response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ chat_id: chatId, text: msg })
+                    });
+                    
+                    if(response.ok) {
+                        alert("Withdrawal requested! Admin panel notified.");
+                        balance = 0;
+                        localStorage.setItem('neb_bal', balance);
+                        updateUI();
+                    } else {
+                        alert("Network Issue. Please try again!");
+                    }
+                } catch (error) {
+                    alert("Error syncing data. Check connection!");
+                }
+            }).catch(() => {
+                alert("Please look at the security verification ad first!");
+            });
         }
 
         updateUI();
