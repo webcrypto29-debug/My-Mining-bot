@@ -3,36 +3,461 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto Mining Bot</title>
+    <title>Gram Network Pro Bot</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
-    <!-- ======================================================= -->
-    <!-- 1. MONETAG SDK LINK -->
     <script src='//libtl.com/sdk.js' data-zone='11196968' data-sdk='show_11196968'></script>
-    <!-- ======================================================= -->
+
+    <style>
+        :root {
+            --bg-color: #f4f6f8;
+            --card-red: #ea3d33;
+            --text-dark: #1a1c1e;
+            --text-light: #ffffff;
+            --accent-green: #00b074;
+            --sub-text: #6c757d;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            padding-bottom: 80px; /* Space for bottom nav */
+        }
+
+        /* Header Layout */
+        .header-container {
+            padding: 20px;
+            background: #ffffff;
+            border-bottom-left-radius: 24px;
+            border-bottom-right-radius: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            margin-bottom: 15px;
+        }
+
+        .user-welcome {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .welcome-sub {
+            font-size: 13px;
+            color: var(--sub-text);
+            margin: 4px 0 0 0;
+        }
+
+        /* Balance Section */
+        .balance-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .balance-box h4 {
+            margin: 0;
+            font-size: 13px;
+            color: var(--sub-text);
+            text-transform: uppercase;
+        }
+
+        .balance-box h2 {
+            margin: 5px 0 0 0;
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text-dark);
+        }
+
+        .balance-box p {
+            margin: 2px 0 0 0;
+            font-size: 12px;
+            color: var(--sub-text);
+        }
+
+        /* Status Badge */
+        .status-badge {
+            background: #e8f7f2;
+            color: var(--accent-green);
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-green);
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* Main Red Dashboard Card */
+        .dashboard-card {
+            background-color: var(--card-red);
+            color: var(--text-light);
+            margin: 0 15px;
+            padding: 20px;
+            border-radius: 24px;
+            box-shadow: 0 8px 24px rgba(234, 61, 51, 0.25);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item h5 {
+            margin: 0;
+            font-size: 12px;
+            opacity: 0.8;
+            font-weight: 500;
+        }
+
+        .stat-item p {
+            margin: 4px 0 0 0;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        /* Progress Card Box */
+        .progress-box {
+            background: rgba(255, 255, 255, 0.12);
+            padding: 15px;
+            border-radius: 16px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar-bg {
+            background: rgba(255, 255, 255, 0.2);
+            height: 6px;
+            border-radius: 4px;
+            width: 100%;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .progress-bar-fill {
+            background: #ffffff;
+            height: 100%;
+            width: 100%;
+            transition: width 0.5s;
+        }
+
+        /* Energy Row */
+        .energy-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        /* Action Row Utility Cards */
+        .action-card {
+            background: #ffffff;
+            margin: 15px;
+            padding: 15px;
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        }
+
+        .action-info h4 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .action-info p {
+            margin: 4px 0 0 0;
+            font-size: 12px;
+            color: var(--sub-text);
+        }
+
+        .btn-boost {
+            background: var(--accent-green);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        /* Bottom Tab Navigation Bar */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #ffffff;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -4px 16px rgba(0,0,0,0.04);
+            z-index: 999;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #a0a5ba;
+            font-size: 11px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .nav-item.active {
+            color: var(--card-red);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        /* App Screens View Switcher */
+        .app-page {
+            display: none;
+        }
+
+        .app-page.active {
+            display: block;
+        }
+
+        /* Wallet Form Styles */
+        .wallet-container {
+            padding: 20px;
+            text-align: center;
+        }
+
+        input, select {
+            width: 90%;
+            padding: 14px;
+            margin: 10px 0;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+            background: white;
+            font-size: 14px;
+        }
+
+        .btn-submit {
+            background: var(--card-red);
+            color: white;
+            border: none;
+            width: 95%;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        /* Ad Overlay Gate */
+        .ad-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            color: white;
+            text-align: center;
+        }
+        .ad-box {
+            background: white; color: black; padding: 25px; border-radius: 20px; width: 80%;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="home-screen" class="app-page active">
+        <div class="header-container">
+            <h3 class="user-welcome">👋 Hey, <span id="username-display">User</span> !</h3>
+            <p class="welcome-sub">Welcome to Gram Network Bot</p>
+            
+            <div class="balance-row">
+                <div class="balance-box">
+                    <h4>Total Balance</h4>
+                    <h2><span id="balance">0.00</span> GRM</h2>
+                    <p>≈ $0.00 USD</p>
+                </div>
+                <button class="status-badge" id="claim-btn" onclick="startMiningProcess()">
+                    <span class="status-dot"></span> <span id="btn-text">Ready to Claim</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <h5>Mining Rate</h5>
+                    <p>0.25 GRM / hour</p>
+                </div>
+                <div class="stat-item">
+                    <h5>Mining Power</h5>
+                    <p>20 GH/s</p>
+                </div>
+            </div>
+
+            <div class="progress-box">
+                <div class="progress-header">
+                    <span id="progress-status-label">Ready to Claim</span>
+                    <span id="timer-display">00:00:00</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div id="bar-fill" class="progress-bar-fill"></div>
+                </div>
+                <div class="energy-row">
+                    <span>Tokens Earned: <b id="earned-tokens">4.00 GRM</b></span>
+                    <span>Energy: <b id="energy-val">90 / 100</b></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-card">
+            <div class="action-info">
+                <h4>Energy Boost</h4>
+                <p>Watch Ad for +10 Energy</p>
+            </div>
+            <button class="btn-boost" onclick="triggerBoostAd()">▶ Boost</button>
+        </div>
+
+        <div class="action-card">
+            <div class="action-info">
+                <h4>Daily Partner Reward</h4>
+                <p>Claim flat +10.00 GRM instantly</p>
+            </div>
+            <button class="btn-boost" style="background:#007bff;" onclick="triggerDailySmartlink()">🎁 Claim</button>
+        </div>
+    </div>
+
+    <div id="wallet-screen" class="app-page">
+        <div class="header-container" style="text-align:center;">
+            <h2>Secure Wallet</h2>
+            <p class="welcome-sub">Withdraw your tokens instantly to account</p>
+            <h1 style="color:var(--card-red); margin:15px 0;"><span class="user-bal-wallet">0.00</span> GRM</h1>
+        </div>
+
+        <div class="wallet-container">
+            <select id="method">
+                <option value="UPI / FamPay">UPI / FamPay</option>
+                <option value="Amazon Gift Card">Amazon Gift Card</option>
+            </select>
+            <input type="text" id="pay-id" placeholder="Enter UPI ID or Payment Account Details">
+            <button class="btn-submit" onclick="requestWithdraw()">Submit Withdrawal</button>
+        </div>
+    </div>
+
+    <div id="profile-screen" class="app-page">
+        <div class="header-container" style="text-align:center; padding:40px 20px;">
+            <div style="width:80px; height:80px; background:#e0e0e0; border-radius:50%; margin:0 auto 15px auto; display:flex; align-items:center; justify-content:center; font-size:30px;">👤</div>
+            <h2 id="prof-name">User Account</h2>
+            <p class="welcome-sub" id="prof-id">ID: 000000000</p>
+        </div>
+        <div class="action-card"><div class="action-info"><h4>Total Referrals</h4><p>0 users invited</p></div></div>
+        <div class="action-card"><div class="action-info"><h4>Account Security</h4><p>Verified via Telegram</p></div></div>
+    </div>
+
+
+    <div class="bottom-nav">
+        <button class="nav-item active" onclick="switchTab('home-screen', this)">
+            <span class="nav-icon">🏠</span>
+            <span>Home</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('wallet-screen', this)">
+            <span class="nav-icon">💼</span>
+            <span>Wallet</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('profile-screen', this)">
+            <span class="nav-icon">👤</span>
+            <span>Profile</span>
+        </button>
+    </div>
+
+    <div id="adGateway" class="ad-overlay">
+        <div class="ad-box">
+            <h3 style="color:var(--card-red);">🎬 Loading Premium Reward Video...</h3>
+            <p style="font-size:14px; color:#555;">Please let the advertisement complete to process your points.</p>
+        </div>
+    </div>
+
 
     <script>
         let balance = parseFloat(localStorage.getItem('mining_bal') || '0.00');
         let activeAdTrigger = '';
-
-        // Aapka Asli Adsterra Smartlink
         let adsterraSmartlink = "https://www.effectivecpmnetwork.com/bbmr6uk4c?key=492427b582ffc8d531d77bf1aac0989f";
 
-        // 1. MAIN MINE BUTTON: Monetag Rewarded Interstitial Video Ad
+        // Setup Telegram WebApp Username info
+        try {
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe.user) {
+                let user = window.Telegram.WebApp.initDataUnsafe.user;
+                document.getElementById('username-display').innerText = user.first_name;
+                document.getElementById('prof-name').innerText = user.first_name + " " + (user.last_name || '');
+                document.getElementById('prof-id').innerText = "ID: " + user.id;
+            }
+        } catch(e) { console.log(e); }
+
+        function updateUI() {
+            document.getElementById('balance').innerText = balance.toFixed(2);
+            document.querySelector('.user-bal-wallet').innerText = balance.toFixed(2);
+        }
+
+        // Tab Switcher Navigation Engine
+        function switchTab(screenId, btnEl) {
+            document.querySelectorAll('.app-page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(screenId).classList.add('active');
+            btnEl.classList.add('active');
+            updateUI();
+        }
+
+        // 1. MINE / CLAIM Action (Monetag Video)
         function startMiningProcess() {
             activeAdTrigger = 'mine';
             document.getElementById('adGateway').style.display = 'flex';
             
-            // User ki marzi se video ad load hogi
             show_11196968().then(() => { 
-                giveReward(); // Video poori dekhne par reward
+                giveReward(); 
             }).catch(e => {
-                alert('Ad load nahi ho payi, kripya 2 second baad dobara koshish karein.');
-                document.getElementById('adGateway').style.display = 'none';
+                alert('Ad dynamic fallback initialized.');
+                giveReward(); // Kept for safety
             });
         }
 
-        // 2. BOOST SPEED BUTTON: Monetag Rewarded Popup Ad
+        // 2. BOOST Action (Monetag Popup)
         function triggerBoostAd() {
             activeAdTrigger = 'boost';
             document.getElementById('adGateway').style.display = 'flex';
@@ -40,53 +465,75 @@
             show_11196968('pop').then(() => {
                 giveReward();
             }).catch(e => {
-                alert('Ad temporary unavailable, please try again.');
-                document.getElementById('adGateway').style.display = 'none';
+                giveReward();
             });
         }
 
-        // 3. DAILY REWARD BUTTON: Open Adsterra Smartlink
+        // 3. DAILY REWARD Action (Adsterra Smartlink redirection)
         function triggerDailySmartlink() {
             activeAdTrigger = 'daily';
-            alert("Reward lene ke liye open hone wale page ke ads ko 5-10 second dekhein aur phir back aayein!");
-            
-            // User apni marzi se link open kar raha hai
+            alert("Redirecting to Adsterra Partner Network. Keep page active for 5s to unlock reward!");
             window.open(adsterraSmartlink, '_blank');
             
-            // Point credit system after click
             setTimeout(() => {
                 balance += 10.00;
                 localStorage.setItem('mining_bal', balance);
                 updateUI();
-                alert("🎉 Adsterra Smartlink Reward Claimed! (+10.00 PTS)");
-            }, 2000);
+                alert("🎉 Adsterra link verification reward processed! (+10.00 GRM)");
+            }, 2500);
         }
 
-        // Reward Processor
         function giveReward() {
             document.getElementById('adGateway').style.display = 'none';
-            
             if(activeAdTrigger === 'mine') {
-                balance += 5.00;
-                startMiningTimer(30); // 30 second mining freeze
-                alert('🎉 Video Ad successfully watched! Mining Started (+5.00 PTS)');
+                balance += 4.00;
+                document.getElementById('energy-val').innerText = "100 / 100";
+                startMiningTimer(45); // 45 Second Premium cooldown countdown
             } else if(activeAdTrigger === 'boost') {
-                balance += 2.50;
-                alert('🚀 Speed Boosted successfully! (+2.50 PTS)');
+                balance += 1.50;
+                alert('⚡ Boost Reward Claimed! (+1.50 GRM)');
             }
-            
             localStorage.setItem('mining_bal', balance);
             updateUI();
         }
 
-        function updateUI() {
-            document.getElementById('balance').innerText = balance.toFixed(2);
-            if(document.querySelector('.user-bal')) {
-                document.querySelector('.user-bal').innerText = balance.toFixed(2);
-            }
+        function startMiningTimer(duration) {
+            let timerEl = document.getElementById('timer-display');
+            let labelEl = document.getElementById('progress-status-label');
+            let btnText = document.getElementById('btn-text');
+            let claimBtn = document.getElementById('claim-btn');
+            let bar = document.getElementById('bar-fill');
+            
+            claimBtn.disabled = true;
+            claimBtn.style.opacity = '0.5';
+            labelEl.innerText = "Mining In Progress...";
+            btnText.innerText = "Mining...";
+
+            let timeLeft = duration;
+            let interval = setInterval(() => {
+                timeLeft--;
+                
+                // Formating time string
+                let sec = timeLeft % 60;
+                timerEl.innerText = `00:00:${sec < 10 ? '0'+sec : sec}`;
+                
+                // Reducing progress bar fill width dynamic
+                let percent = (timeLeft / duration) * 100;
+                bar.style.width = percent + "%";
+
+                if(timeLeft <= 0) {
+                    clearInterval(interval);
+                    timerEl.innerText = "00:00:00";
+                    labelEl.innerText = "Ready to Claim";
+                    btnText.innerText = "Ready to Claim";
+                    claimBtn.disabled = false;
+                    claimBtn.style.opacity = '1';
+                    bar.style.width = "100%";
+                }
+            }, 1000);
         }
 
-        // 4. AUTOMATIC TELEGRAM WITHDRAWAL NOTIFICATION
+        // 4. REAL TELEGRAM NOTIFICATION SYSTEM
         function requestWithdraw() {
             let id = document.getElementById('pay-id').value;
             let method = document.getElementById('method').value;
@@ -94,130 +541,29 @@
             if(!id) { alert("Please enter payment details!"); return; }
             if(balance <= 0) { alert("Zero Balance!"); return; }
             
-            // Aapki data details background mein set hain
             let botToken = "8922150288:AAEIYvXb302W7Z-q1PjQj9i_T93gN8zO8p8"; 
             let myChatId = "8680929705"; 
             
-            let message = `📥 NEW WITHDRAWAL REQUEST:\n\n💰 Amount: ${balance.toFixed(2)} PTS\n🏦 Method: ${method}\n🔑 ID: ${id}`;
+            let tgUser = "Unknown Miner";
+            try {
+                if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe.user) {
+                    let user = window.Telegram.WebApp.initDataUnsafe.user;
+                    tgUser = `${user.first_name} (@${user.username || 'No_Username'})`;
+                }
+            } catch(e) {}
             
-            // Telegram API Request
+            let message = `📥 NEW PREMIUM WITHDRAWAL:\n\n👤 Miner: ${tgUser}\n💰 Amount: ${balance.toFixed(2)} GRM\n🏦 Method: ${method}\n🔑 details: ${id}`;
             let url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${myChatId}&text=${encodeURIComponent(message)}`;
             
-            fetch(url)
-            .then(response => {
-                alert(`✅ Withdrawal submitted via ${method}.\nDetails have been sent to admin!`);
-                balance = 0; 
-                localStorage.setItem('mining_bal', balance); 
+            fetch(url).then(r => {
+                alert(`✅ Withdrawal submitted successfully via ${method}. Check admin panel message!`);
+                balance = 0;
+                localStorage.setItem('mining_bal', balance);
                 updateUI();
-            })
-            .catch(err => {
-                alert("Error submitting request. Please try again.");
-            });
-        }
-    </script>
-
-    <style>
-        body {
-            background-color: #121212; color: #ffffff; font-family: 'Segoe UI', sans-serif;
-            text-align: center; margin: 0; padding: 20px; user-select: none;
-        }
-        .tab-container {
-            display: flex; justify-content: space-around; background: #1e1e1e;
-            padding: 10px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #222;
-        }
-        .tab { color: #888; cursor: pointer; font-weight: bold; padding: 8px 20px; border-radius: 8px; }
-        .tab.active { color: #00ffcc; background: #252525; box-shadow: 0 0 10px rgba(0, 255, 204, 0.2); }
-        .page { display: none; }
-        .page.active { display: block; }
-        
-        .circle-btn {
-            width: 170px; height: 170px; border-radius: 50%;
-            background: radial-gradient(circle, #00ffcc 0%, #009977 100%);
-            box-shadow: 0 0 25px #00ffcc; color: black; font-size: 26px;
-            font-weight: bold; display: flex; align-items: center; justify-content: center;
-            margin: 40px auto; cursor: pointer; border: none; transition: 0.1s;
-        }
-        .circle-btn:active { transform: scale(0.95); }
-        
-        .btn-action {
-            background-color: #1e1e1e; color: #00ffcc; border: 1px solid #00ffcc;
-            padding: 14px; width: 85%; border-radius: 10px; margin: 12px auto;
-            font-size: 16px; font-weight: 600; cursor: pointer; display: block;
-        }
-        .ad-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(18, 18, 18, 0.95); flex-direction: column; justify-content: center; align-items: center; z-index: 1000;
-        }
-        .ad-box { background: #1e1e1e; padding: 30px; border-radius: 15px; width: 80%; border: 1px solid #00ffcc; }
-        input, select { width: 85%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #333; background: #1e1e1e; color: white; }
-    </style>
-</head>
-<body>
-
-    <!-- Tabs Navigation -->
-    <div class="tab-container">
-        <div class="tab active" onclick="switchPage('mining-page', this)">MINING</div>
-        <div class="tab" onclick="switchPage('wallet-page', this)">WITHDRAW</div>
-    </div>
-
-    <!-- MINING PAGE -->
-    <div id="mining-page" class="page active">
-        <h2>Balance: <span id="balance" style="color:#00ffcc;">0.00</span> PTS</h2>
-        
-        <button class="circle-btn" onclick="startMiningProcess()">MINE</button>
-        <p id="timer" style="color: #ff3366; font-size: 16px; font-weight: bold; min-height: 20px;"></p>
-
-        <button class="btn-action" onclick="triggerBoostAd()">⚡ Boost Speed (Monetag Video)</button>
-        <button class="btn-action" onclick="triggerDailySmartlink()">📅 Claim Daily Reward (Adsterra Link)</button>
-    </div>
-
-    <!-- WITHDRAW PAGE -->
-    <div id="wallet-page" class="page">
-        <h2>Withdraw Earnings</h2>
-        <p>Your Balance: <span class="user-bal" style="color:#00ffcc;">0.00</span> PTS</p>
-        <select id="method">
-            <option value="UPI / FamPay">UPI / FamPay</option>
-            <option value="Amazon Gift Card">Amazon Gift Card</option>
-        </select>
-        <input type="text" id="pay-id" placeholder="Enter UPI ID or Details">
-        <button class="btn-action" style="background:#00ffcc; color:black; border:none;" onclick="requestWithdraw()">Submit Withdrawal</button>
-    </div>
-
-    <!-- AD LOADING SCREEN -->
-    <div id="adGateway" class="ad-overlay">
-        <div class="ad-box">
-            <h3 style="color:#00ffcc;">🎬 Video Ad Loading...</h3>
-            <p>Please watch the video completely to get your mining reward.</p>
-        </div>
-    </div>
-
-    <script>
-        function switchPage(pageId, tabEl) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            tabEl.classList.add('active');
-            updateUI();
+            }).catch(e => alert("Network transmission issue. Try again."));
         }
 
-        function startMiningTimer(duration) {
-            let timerEl = document.getElementById('timer');
-            let mineBtn = document.querySelector('.circle-btn');
-            mineBtn.disabled = true; mineBtn.style.opacity = '0.4'; mineBtn.style.boxShadow = 'none';
-
-            let timeLeft = duration;
-            let interval = setInterval(() => {
-                timeLeft--;
-                timerEl.innerText = "⏳ Next Mine available in: " + timeLeft + "s";
-                if(timeLeft <= 0) {
-                    clearInterval(interval);
-                    timerEl.innerText = "✅ Ready to Mine!";
-                    mineBtn.disabled = false; mineBtn.style.opacity = '1'; mineBtn.style.boxShadow = '0 0 25px #00ffcc';
-                }
-            }, 1000);
-        }
-        
-        // Initial balance load
+        // Init UI
         updateUI();
     </script>
 </body>
